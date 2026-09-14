@@ -2,13 +2,17 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download } from "lucide-react";
 import { MasonryGallery } from "./MasonryGallery";
 import { events, type WeddingEvent } from "@/data/weddingData";
 import { getEventGallery } from "@/lib/gallery.functions";
+import { downloadChapterZip } from "@/server/zip.functions";
+import { useState } from "react";
 
 export function EventPage({ event }: { event: WeddingEvent }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -85,12 +89,50 @@ export function EventPage({ event }: { event: WeddingEvent }) {
       >
         <div className="mx-auto max-w-[1400px]">
           <div className="mb-14 flex flex-col gap-3 border-b border-border pb-8 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
-              {event.title} Gallery
-            </h2>
-            <p className="text-[11px] tracking-editorial text-muted-foreground">
-              {photos.length} photographs
-            </p>
+            <div className="flex flex-col gap-1">
+              <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+                {event.title} Gallery
+              </h2>
+              <p className="text-[11px] tracking-editorial text-muted-foreground">
+                {photos.length} photographs
+              </p>
+            </div>
+            
+            <button
+              disabled={isDownloading}
+              onClick={async () => {
+                setIsDownloading(true);
+                try {
+                  const res = await downloadChapterZip({ data: { slug: event.slug } });
+                  const blob = await (res as unknown as Response).blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `santhosh-sanjhana-${event.slug}.zip`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                } catch (e) {
+                  console.error(e);
+                  alert("Failed to download ZIP. Please try again.");
+                } finally {
+                  setIsDownloading(false);
+                }
+              }}
+              className="flex items-center gap-2 border border-border px-5 py-2.5 text-[11px] uppercase tracking-editorial text-foreground transition hover:bg-secondary disabled:opacity-50"
+            >
+              {isDownloading ? (
+                <span className="flex items-center gap-2">
+                  <span className="h-3 w-3 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+                  Generating ZIP...
+                </span>
+              ) : (
+                <>
+                  <Download size={14} /> Download Chapter
+                </>
+              )}
+            </button>
           </div>
 
           <MasonryGallery photos={photos} />

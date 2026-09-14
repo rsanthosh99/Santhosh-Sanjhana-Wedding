@@ -53,6 +53,17 @@ export function Navbar() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              to="/favorites"
+              className={`text-[11px] tracking-editorial transition-colors duration-300 hover:text-accent ${
+                solid ? "text-muted-foreground" : "text-on-dark/85"
+              }`}
+              activeProps={{ className: "text-accent" }}
+            >
+              My Favorites
+            </Link>
+          </li>
         </ul>
 
         <button
@@ -76,7 +87,7 @@ export function Navbar() {
             className="overflow-hidden border-t border-border/60 bg-background/95 px-6 lg:hidden"
           >
             {events.map((e) => (
-              <li key={e.slug} className="border-b border-border/40 last:border-0">
+              <li key={e.slug} className="border-b border-border/40">
                 <Link
                   to="/$slug"
                   params={{ slug: e.slug }}
@@ -86,6 +97,14 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
+            <li className="border-b border-border/40 last:border-0">
+              <Link
+                to="/favorites"
+                className="block py-4 font-serif text-lg text-foreground italic text-accent"
+              >
+                My Favorites
+              </Link>
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>

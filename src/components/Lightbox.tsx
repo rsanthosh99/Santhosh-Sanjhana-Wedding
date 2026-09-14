@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import { X, ChevronLeft, ChevronRight, Heart, Download } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Heart, Download, Share } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { downloadImage } from "@/hooks/useFavorites";
@@ -22,6 +22,8 @@ export function Lightbox({
   onToggleFavorite,
 }: Props) {
   const [isZoomed, setIsZoomed] = useState(false);
+  const [showHeart, setShowHeart] = useState(false);
+
 
   useEffect(() => {
     if (index === null) return;
@@ -39,6 +41,8 @@ export function Lightbox({
   }, [index, images.length, onClose, onNavigate]);
 
   const src = index !== null ? images[index] : null;
+  const nextSrc = index !== null ? images[(index + 1) % images.length] : null;
+  const prevSrc = index !== null ? images[(index - 1 + images.length) % images.length] : null;
 
   return (
     <AnimatePresence>
@@ -102,13 +106,36 @@ export function Lightbox({
               doubleClick={{ disabled: true }}
             >
               <TransformComponent wrapperClass="!max-h-[78vh] flex items-center justify-center">
-                <img
-                  src={src}
-                  alt=""
-                  className="max-h-[78vh] w-auto max-w-full object-contain shadow-2xl"
-                  style={{ pointerEvents: "auto" }}
-                  draggable={false}
-                />
+                <div 
+                  className="relative flex items-center justify-center"
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    if (!isFavorite(src)) onToggleFavorite(src);
+                    setShowHeart(true);
+                    setTimeout(() => setShowHeart(false), 800);
+                  }}
+                >
+                  <img
+                    src={src}
+                    alt=""
+                    className="max-h-[78vh] w-auto max-w-full object-contain shadow-2xl"
+                    style={{ pointerEvents: "auto" }}
+                    draggable={false}
+                  />
+                  <AnimatePresence>
+                    {showHeart && (
+                      <motion.div
+                        initial={{ scale: 0.2, opacity: 0 }}
+                        animate={{ scale: 1.5, opacity: 1 }}
+                        exit={{ scale: 2.5, opacity: 0 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="absolute z-50 pointer-events-none"
+                      >
+                        <Heart size={100} strokeWidth={0} className="fill-white/80 drop-shadow-2xl" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </TransformComponent>
             </TransformWrapper>
             <div className="flex items-center gap-3">
@@ -124,6 +151,18 @@ export function Lightbox({
                 {isFavorite(src) ? "Favorited" : "Favorite"}
               </button>
               <button
+                onClick={() => {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set("photo", index!.toString());
+                  navigator.clipboard.writeText(url.toString());
+                  // Optional: we could add a toast here
+                }}
+                aria-label="Share"
+                className="flex items-center gap-2 border border-on-dark/25 px-4 py-2 text-[11px] tracking-editorial text-on-dark/80 transition hover:border-on-dark/60"
+              >
+                <Share size={15} /> Share
+              </button>
+              <button
                 onClick={() => downloadImage(src, `santhosh-sanjhana-${index}.jpg`)}
                 aria-label="Download"
                 className="flex items-center gap-2 border border-on-dark/25 px-4 py-2 text-[11px] tracking-editorial text-on-dark/80 transition hover:border-on-dark/60"
@@ -134,6 +173,9 @@ export function Lightbox({
             <p className="text-[11px] tracking-editorial text-on-dark/40">
               {index! + 1} / {images.length}
             </p>
+            {/* Preload adjacent images */}
+            {nextSrc && <link rel="preload" as="image" href={nextSrc} />}
+            {prevSrc && <link rel="preload" as="image" href={prevSrc} />}
           </motion.div>
         </motion.div>
       )}

@@ -18,6 +18,27 @@ export function MasonryGallery({ photos }: { photos: GalleryPhoto[] }) {
   }, [photos]);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const photoIndex = params.get("photo");
+    if (photoIndex !== null) {
+      const idx = parseInt(photoIndex, 10);
+      if (!isNaN(idx) && idx >= 0 && idx < photos.length) {
+        setOpenIndex(idx);
+      }
+    }
+  }, [photos]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (openIndex !== null) {
+      url.searchParams.set("photo", openIndex.toString());
+    } else {
+      url.searchParams.delete("photo");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, [openIndex]);
+
+  useEffect(() => {
     const el = sentinel.current;
     if (!el) return;
     const io = new IntersectionObserver(
