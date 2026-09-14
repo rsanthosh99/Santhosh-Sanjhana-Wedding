@@ -33,7 +33,8 @@ const spans = [
   "lg:col-span-4 min-h-[300px]",
   "lg:col-span-4 min-h-[300px]",
   "lg:col-span-4 min-h-[300px]",
-  "lg:col-span-12 min-h-[320px]",
+  "lg:col-span-6 min-h-[320px]",
+  "lg:col-span-6 min-h-[320px]",
 ];
 
 function Home() {
@@ -100,7 +101,7 @@ function Home() {
           >
             <span className="h-px w-12 bg-on-dark/40" />
             <span className="text-[11px] tracking-editorial text-on-dark/70">
-              Seven Chapters
+              Eight Chapters
             </span>
             <span className="h-px w-12 bg-on-dark/40" />
           </motion.div>

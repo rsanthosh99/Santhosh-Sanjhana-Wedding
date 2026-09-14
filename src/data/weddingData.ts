@@ -1,7 +1,7 @@
 export const couple = {
   bride: "Sanjhana",
   groom: "Santhosh",
-  tagline: "A love story told in eight chapters",
+  tagline: "Eight beautiful celebrations of forever",
   heroImage: "",
 };
 
