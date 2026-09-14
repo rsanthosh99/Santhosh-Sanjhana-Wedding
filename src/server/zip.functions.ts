@@ -8,7 +8,7 @@ export const downloadChapterZip = createServerFn({ method: "GET" })
     const event = getEvent(data.slug);
     if (!event) throw new Error("Chapter not found");
 
-    const { buildEventGallery } = await import("./gallery.server");
+    const { buildEventGallery } = await import("@/lib/gallery.server");
     const gallery = await buildEventGallery(event.slug, {
       heroImage: event.heroImage,
       gallery: event.gallery,
