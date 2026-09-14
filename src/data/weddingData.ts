@@ -1,12 +1,13 @@
 export const couple = {
   bride: "Sanjhana",
   groom: "Santhosh",
-  tagline: "A love story told in seven chapters",
+  tagline: "A love story told in eight chapters",
   heroImage: "",
 };
 
 export type WeddingEvent = {
   slug: string;
+  folder: string;
   title: string;
   subtitle: string;
   description: string;
@@ -16,12 +17,10 @@ export type WeddingEvent = {
   gallery: string[];
 };
 
-/** Folder (prefix) inside the Google Cloud bucket that holds this chapter's photos. */
-export const eventFolder = (slug: string) => `${slug}/`;
-
 export const events: WeddingEvent[] = [
   {
     slug: "proposal",
+    folder: "Proposal",
     title: "The Proposal",
     subtitle: "Chapter One",
     description:
@@ -31,6 +30,7 @@ export const events: WeddingEvent[] = [
   },
   {
     slug: "mama-seer",
+    folder: "Mama Seer",
     title: "Mama Seer",
     subtitle: "Chapter Two",
     description:
@@ -40,6 +40,7 @@ export const events: WeddingEvent[] = [
   },
   {
     slug: "haldi",
+    folder: "Haldi",
     title: "Haldi",
     subtitle: "Chapter Three",
     description:
@@ -48,8 +49,9 @@ export const events: WeddingEvent[] = [
     gallery: [],
   },
   {
-    slug: "sangeet",
-    title: "Sangeet",
+    slug: "sangeeth",
+    folder: "Sangeeth",
+    title: "Sangeeth",
     subtitle: "Chapter Four",
     description:
       "The night the families danced until the floor gave way to joy. Rehearsed routines, unrehearsed hearts, and music that refused to end.",
@@ -57,32 +59,52 @@ export const events: WeddingEvent[] = [
     gallery: [],
   },
   {
-    slug: "viratham",
-    title: "Viratham",
+    slug: "wedding",
+    folder: "Wedding",
+    title: "Wedding",
     subtitle: "Chapter Five",
-    description:
-      "A sacred day of vows and preparation, observed in stillness before the celebration swells. Ritual, discipline and devotion offered for a blessed union.",
-    heroImage: "",
-    gallery: [],
-  },
-  {
-    slug: "nalangu-reception",
-    title: "Nalangu & Reception",
-    subtitle: "Chapter Six",
-    description:
-      "Playful games between two families, followed by an evening of glamour and grace. Sandalwood, silk and a room full of people who love them both.",
-    heroImage: "",
-    gallery: [],
-  },
-  {
-    slug: "muhurtham",
-    title: "Muhurtham",
-    subtitle: "Chapter Seven",
     description:
       "At the most auspicious hour, the thaali is tied and two lives become one. The moment every chapter before it was quietly writing toward.",
     heroImage: "",
     gallery: [],
   },
+  {
+    slug: "reception",
+    folder: "Reception",
+    title: "Reception",
+    subtitle: "Chapter Six",
+    description:
+      "An evening of glamour, grace, and celebrating love. A room full of people who love them both.",
+    heroImage: "",
+    gallery: [],
+  },
+  {
+    slug: "film-camera",
+    folder: "Film Camera",
+    title: "Film Camera",
+    subtitle: "Chapter Seven",
+    description:
+      "Raw, unedited moments captured on film. Authentic memories frozen in time.",
+    heroImage: "",
+    gallery: [],
+  },
+  {
+    slug: "film-stimulation",
+    folder: "Film Stimulation",
+    title: "Film Stimulation",
+    subtitle: "Chapter Eight",
+    description:
+      "A cinematic look at the beautiful moments from our journey together.",
+    heroImage: "",
+    gallery: [],
+  },
 ];
+
+/** Folder (prefix) inside the Google Cloud bucket that holds this chapter's photos. */
+export const eventFolder = (slug: string) => {
+  if (slug === "home") return "Home/";
+  const event = events.find((e) => e.slug === slug);
+  return event ? `${event.folder}/` : `${slug}/`;
+};
 
 export const getEvent = (slug: string) => events.find((e) => e.slug === slug);
