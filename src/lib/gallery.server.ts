@@ -1,5 +1,5 @@
-// Server-only gallery assembly: bucket listing.
 import { getBucket, isImage, listPrefix, publicUrl } from "./gcs.server";
+import { eventFolder } from "../data/weddingData";
 
 export type Photo = { name: string; thumb: string; full: string };
 
@@ -25,9 +25,10 @@ async function listEventObjects(slug: string) {
   if (cached && Date.now() - cached.at < CACHE_MS) return cached.value;
 
   const bucket = getBucket()!;
+  const folder = eventFolder(slug);
   const [originals, thumbs] = await Promise.all([
-    listPrefix(bucket, `${slug}/`),
-    listPrefix(bucket, `thumbs/${slug}/`).catch(() => [] as string[]),
+    listPrefix(bucket, folder),
+    listPrefix(bucket, `thumbs/${folder}`).catch(() => [] as string[]),
   ]);
 
   const thumbSet = new Set(thumbs);
