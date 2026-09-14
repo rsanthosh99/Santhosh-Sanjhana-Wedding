@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { couple, events } from "@/data/weddingData";
-import { getAllHeroes } from "@/lib/gallery.functions";
+import { getAllHeroes, getHomeHero } from "@/lib/gallery.functions";
 
 
 export const Route = createFileRoute("/")({
@@ -42,6 +42,12 @@ function Home() {
     queryFn: () => getAllHeroes(),
     staleTime: 60_000,
   });
+
+  const { data: homeHero } = useQuery({
+    queryKey: ["homeHero"],
+    queryFn: () => getHomeHero(),
+    staleTime: 60_000,
+  });
   const heroFor = (slug: string, fallback: string) =>
     heroes?.find((h) => h.slug === slug)?.heroUrl ?? fallback;
 
@@ -49,14 +55,18 @@ function Home() {
     <main className="bg-background">
       <section className="relative h-screen w-full overflow-hidden">
 
-        <motion.img
-          src={couple.heroImage}
-          alt={`${couple.groom} and ${couple.bride}`}
-          initial={{ scale: 1.12 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {homeHero ? (
+          <motion.img
+            src={homeHero}
+            alt={`${couple.groom} and ${couple.bride}`}
+            initial={{ scale: 1.12 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 h-full w-full bg-ink" />
+        )}
         <div className="absolute inset-0 bg-ink/45" />
         <div className="absolute inset-0 bg-gradient-to-b from-ink/60 via-transparent to-ink/80" />
 

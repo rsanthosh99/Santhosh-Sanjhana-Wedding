@@ -26,3 +26,9 @@ export const getAllHeroes = createServerFn({ method: "GET" }).handler(async () =
   );
   return results;
 });
+
+export const getHomeHero = createServerFn({ method: "GET" }).handler(async () => {
+  const { buildEventGallery } = await import("./gallery.server");
+  const gallery = await buildEventGallery("home", { heroImage: "", gallery: [] });
+  return gallery.heroUrl;
+});

@@ -64,8 +64,20 @@ export async function buildEventGallery(
   try {
     const { photos } = await listEventObjects(slug);
 
-    // The hero image is automatically the first one in the bucket, or the fallback.
-    const heroUrl = photos[0]?.full ?? fallback.heroImage;
+    // Look for a photo with 'hero' in the filename
+    const heroIndex = photos.findIndex(p => p.name.toLowerCase().includes('hero'));
+    
+    let heroUrl = fallback.heroImage;
+    let galleryPhotos = photos;
+    
+    if (heroIndex !== -1) {
+      heroUrl = photos[heroIndex].full;
+      // Remove the hero image from the main gallery array so it's not duplicated
+      galleryPhotos = photos.filter((_, index) => index !== heroIndex);
+    } else if (photos.length > 0) {
+      // Fallback to the first image if no 'hero' file exists
+      heroUrl = photos[0].full;
+    }
 
     if (photos.length === 0) {
       return {
@@ -77,7 +89,7 @@ export async function buildEventGallery(
       };
     }
 
-    return { slug, photos, heroUrl, source: "bucket", bucketConfigured: true };
+    return { slug, photos: galleryPhotos, heroUrl, source: "bucket", bucketConfigured: true };
   } catch (error) {
     console.error(`[gallery] ${slug} failed:`, error);
     return {
