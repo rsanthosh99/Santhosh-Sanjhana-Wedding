@@ -79,10 +79,18 @@ export function Lightbox({
 
           <motion.div
             key={src}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.8}
+            onDragEnd={(e, { offset, velocity }) => {
+              if (Math.abs(offset.y) > 80 || Math.abs(velocity.y) > 400) {
+                onClose();
+              }
+            }}
             initial={{ opacity: 0, scale: 0.99 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex max-h-full flex-col items-center gap-4"
+            className="flex max-h-full flex-col items-center gap-4 cursor-grab active:cursor-grabbing"
             onClick={(e) => e.stopPropagation()}
           >
             <img
