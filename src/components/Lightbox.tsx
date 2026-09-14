@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
 import { X, ChevronLeft, ChevronRight, Heart, Download } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { downloadImage } from "@/hooks/useFavorites";
 
 type Props = {
@@ -20,6 +21,8 @@ export function Lightbox({
   isFavorite,
   onToggleFavorite,
 }: Props) {
+  const [isZoomed, setIsZoomed] = useState(false);
+
   useEffect(() => {
     if (index === null) return;
     const onKey = (e: KeyboardEvent) => {
@@ -79,7 +82,7 @@ export function Lightbox({
 
           <motion.div
             key={src}
-            drag="y"
+            drag={isZoomed ? false : "y"}
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.8}
             onDragEnd={(e, { offset, velocity }) => {
@@ -90,14 +93,24 @@ export function Lightbox({
             initial={{ opacity: 0, scale: 0.99 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex max-h-full flex-col items-center gap-4 cursor-grab active:cursor-grabbing"
+            className={`flex max-h-full flex-col items-center gap-4 ${!isZoomed ? "cursor-grab active:cursor-grabbing" : ""}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={src}
-              alt=""
-              className="max-h-[78vh] w-auto max-w-full object-contain shadow-2xl"
-            />
+            <TransformWrapper
+              onTransformed={(ref) => setIsZoomed(ref.state.scale > 1.01)}
+              wheel={{ step: 0.1 }}
+              doubleClick={{ disabled: true }}
+            >
+              <TransformComponent wrapperClass="!max-h-[78vh] flex items-center justify-center">
+                <img
+                  src={src}
+                  alt=""
+                  className="max-h-[78vh] w-auto max-w-full object-contain shadow-2xl"
+                  style={{ pointerEvents: "auto" }}
+                  draggable={false}
+                />
+              </TransformComponent>
+            </TransformWrapper>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => onToggleFavorite(src)}
